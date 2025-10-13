@@ -19,5 +19,16 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    ignores: [
+      'node_modules',
+      'public',
+      '*.svg',
+      '.huskyrc.json',
+      'tsconfig*.json',
+      '.lintstagedrc.json',
+      '.prettierrc.json',
+      'matchers.d.ts',
+      'testing-library.ts',
+    ],
   },
 ])
