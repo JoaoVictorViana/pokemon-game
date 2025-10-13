@@ -1,0 +1,19 @@
+# Etapa única — Ambiente de desenvolvimento
+FROM oven/bun:1
+
+WORKDIR /app
+
+# Copia apenas arquivos essenciais para instalar deps
+COPY package.json bun.lock ./
+
+# Instala dependências
+RUN bun install
+
+# Copia o resto do código (só pra primeira build)
+COPY . .
+
+# Exponha a porta do Vite
+EXPOSE 5173
+
+# Comando padrão (usa o script do package.json)
+CMD ["bun", "run", "dev"]
