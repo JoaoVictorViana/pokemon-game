@@ -1,0 +1,1 @@
+export const ANIMATION_POKEMON_SPRITE_SPEED = 0.2
