@@ -30,5 +30,8 @@ export default defineConfig([
       'matchers.d.ts',
       'testing-library.ts',
     ],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
   },
 ])

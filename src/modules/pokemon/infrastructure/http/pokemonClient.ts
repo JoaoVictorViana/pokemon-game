@@ -5,7 +5,7 @@ export const pokemonClient = {
   },
 
   async listAll() {
-    const res = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=151`)
+    const res = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=10000`)
     return res.json()
   },
 }
