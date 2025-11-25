@@ -16,13 +16,13 @@ export function PokemonSprites({ pokemon }: Props) {
   const currentSprite = useMemo(() => {
     if (!shinyChecked) {
       return spriteMode === 'front'
-        ? pokemon.sprites.front
-        : pokemon.sprites.back
+        ? pokemon.sprites?.front
+        : pokemon.sprites?.back
     }
 
     return spriteMode === 'front'
-      ? pokemon.sprites.front_shiny
-      : pokemon.sprites.back_shiny
+      ? pokemon.sprites?.front_shiny
+      : pokemon.sprites?.back_shiny
   }, [spriteMode, shinyChecked, pokemon])
 
   const startSpriteAnimation = useCallback(() => {
@@ -47,24 +47,31 @@ export function PokemonSprites({ pokemon }: Props) {
   }, [pokemon, currentSprite, startSpriteAnimation])
 
   return (
-    <div>
+    <div className="relative w-auto h-auto">
       <motion.img
         src={currentSprite}
         alt={pokemon.name}
+        className="w-[200px]"
         animate={animationSpriteControl}
       />
-      <div className="flex gap-2">
-        <button onClick={handleChangePosition}>{'<'}</button>
-        <button onClick={handleChangePosition}>{'>'}</button>
-        <div>
-          <input
-            id="active-shiny"
-            type="checkbox"
-            onChange={(e) => setShinyChecked(e.target.checked)}
-          />
-          <label htmlFor="#active-shiny">Modo shiny?</label>
-        </div>
-      </div>
+      <button
+        className="absolute top-[50%] left-0 cursor-pointer"
+        onClick={handleChangePosition}
+      >
+        {'<'}
+      </button>
+      <button
+        className="absolute top-[50%] right-0 cursor-pointer"
+        onClick={handleChangePosition}
+      >
+        {'>'}
+      </button>
+      <button
+        className={`${shinyChecked ? 'bg-green-300' : 'bg-gray-300'}  hover:border-gray-300 text-xs hover:bg-green-300 text-black absolute p-2 top-0 right-0 cursor-pointer rounded-full`}
+        onClick={() => setShinyChecked((prev) => !prev)}
+      >
+        S
+      </button>
     </div>
   )
 }
