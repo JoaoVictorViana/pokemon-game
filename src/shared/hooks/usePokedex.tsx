@@ -1,7 +1,7 @@
 import { FetchPokemonUseCase } from '@/modules/pokemon/application/use-cases/FetchPokemonUseCase'
 import { ListPokemonsUseCase } from '@/modules/pokemon/application/use-cases/ListPokemonsUseCase'
 import type { Pokemon } from '@/modules/pokemon/domain/entities/Pokemon'
-import { PokemonApiRepository } from '@/modules/pokemon/infrastructure/repositories/PokemonApiRepository'
+import { PokemonDBRepository } from '@/modules/pokemon/infrastructure/repositories/PokemonDBRepository'
 import { useCallback, useEffect, useState } from 'react'
 
 export function usePokedex() {
@@ -11,7 +11,7 @@ export function usePokedex() {
 
   const handleChangeCurrentPokemon = useCallback(
     (id: number) => {
-      const repo = new PokemonApiRepository()
+      const repo = new PokemonDBRepository()
       const useCase = new FetchPokemonUseCase(repo)
       setLoading(true)
 
@@ -24,7 +24,7 @@ export function usePokedex() {
   )
 
   useEffect(() => {
-    const repo = new PokemonApiRepository()
+    const repo = new PokemonDBRepository()
     const useCase = new ListPokemonsUseCase(repo)
 
     useCase.execute().then((res) => {

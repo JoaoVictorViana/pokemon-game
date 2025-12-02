@@ -1,11 +1,11 @@
 import { useRoutes } from 'react-router'
-import { exampleRoutes } from '@/modules/example/routes'
 import { pokemonRoutes } from './modules/pokemon/routes'
 import { pokedexRoutes } from './modules/pokedex/routes'
+import { bootRoutes } from './modules/boot/routes'
 
 function App() {
   const routes = useRoutes([
-    ...exampleRoutes,
+    ...bootRoutes,
     ...pokemonRoutes,
     ...pokedexRoutes,
     { path: '*', element: <h1>Página não encontrada</h1> },

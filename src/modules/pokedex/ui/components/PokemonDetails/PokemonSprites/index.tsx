@@ -13,18 +13,6 @@ export function PokemonSprites({ pokemon }: Props) {
   const [shinyChecked, setShinyChecked] = useState(false)
   const animationSpriteControl = useAnimationControls()
 
-  const currentSprite = useMemo(() => {
-    if (!shinyChecked) {
-      return spriteMode === 'front'
-        ? pokemon.sprites?.front
-        : pokemon.sprites?.back
-    }
-
-    return spriteMode === 'front'
-      ? pokemon.sprites?.front_shiny
-      : pokemon.sprites?.back_shiny
-  }, [spriteMode, shinyChecked, pokemon])
-
   const startSpriteAnimation = useCallback(() => {
     animationSpriteControl.start({
       y: [0, -10, 0],
@@ -40,11 +28,49 @@ export function PokemonSprites({ pokemon }: Props) {
     setSpriteMode((prev) => (prev === 'back' ? 'front' : 'back'))
   }, [setSpriteMode])
 
+  const handleRenderSprite = (arrayBufferSprite?: ArrayBuffer) => {
+    if (!arrayBufferSprite) return undefined
+
+    console.log(arrayBufferSprite)
+    const imageBlob = new Blob([arrayBufferSprite], { type: 'image/png' })
+    const objectUrl = URL.createObjectURL(imageBlob)
+    return objectUrl
+  }
+
+  const sprites = useMemo(() => {
+    return {
+      back: handleRenderSprite(pokemon.sprites?.back),
+      back_shiny: handleRenderSprite(pokemon.sprites?.back_shiny),
+      front: handleRenderSprite(pokemon.sprites?.front),
+      front_shiny: handleRenderSprite(pokemon.sprites?.front_shiny),
+    }
+  }, [pokemon])
+
+  console.log(sprites)
+
+  const currentSprite = useMemo(() => {
+    if (!shinyChecked) {
+      return spriteMode === 'front' ? sprites.front : sprites.back
+    }
+
+    return spriteMode === 'front' ? sprites.front_shiny : sprites.back_shiny
+  }, [spriteMode, shinyChecked, sprites])
+
   useEffect(() => {
+    if (!pokemon) return
     const audioService = new PokemonAudioService()
     audioService.playCry(pokemon.cry)
     startSpriteAnimation()
   }, [pokemon, currentSprite, startSpriteAnimation])
+
+  useEffect(() => {
+    return () => {
+      URL.revokeObjectURL(sprites.back ?? '')
+      URL.revokeObjectURL(sprites.back_shiny ?? '')
+      URL.revokeObjectURL(sprites.front ?? '')
+      URL.revokeObjectURL(sprites.front_shiny ?? '')
+    }
+  }, [sprites])
 
   return (
     <div className="relative w-auto h-auto">
