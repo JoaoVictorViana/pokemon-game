@@ -11,7 +11,7 @@ export class Pokemon {
     public readonly height: number,
     public readonly weight: number,
     public readonly base_experience: number,
-    public readonly cry: string,
+    public readonly cry: ArrayBuffer,
     public readonly sprites?: PokemonSprites,
     public readonly moves?: PokemonMove[],
     public readonly types?: PokemonType[],

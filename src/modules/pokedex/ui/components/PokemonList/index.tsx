@@ -10,8 +10,8 @@ export function PokemonList({ pokemons, onSelect }: Props) {
     <div className="flex flex-col overflow-auto w-[30%] h-full gap-1 poke-modern-scroll px-2">
       {pokemons.map((pokemon) => (
         <div
+          key={pokemon.id?.getValue()}
           className="w-full text-black bg-gray-300 p-2 border rounded-xl cursor-pointer"
-          id={pokemon.name}
           onClick={() => pokemon.id && onSelect(pokemon.id.getValue())}
         >
           {pokemon.name}
