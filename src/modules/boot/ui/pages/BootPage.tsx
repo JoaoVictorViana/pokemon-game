@@ -26,7 +26,7 @@ export function BootPage() {
       setMessage(m)
 
       if (p >= 100) {
-        setTimeout(() => navigate('/pokedex'), 500)
+        setTimeout(() => navigate('/menu'), 500)
       }
     })
   }, [navigate])
