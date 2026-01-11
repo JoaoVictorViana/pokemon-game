@@ -7,7 +7,6 @@ type Props = {
 }
 
 export function PokemonDetails({ pokemon }: Props) {
-  console.log(pokemon.moves)
   return (
     <div className="flex flex-col justify-between gap-2 w-full h-full">
       <section className="flex justify-between px-4 gap-4 w-full h-full">

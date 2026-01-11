@@ -1,4 +1,5 @@
 import { audioEngine } from '@/shared/services/audio/AudioEngine'
+import { Button } from '@/shared/ui/core/Button'
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router'
 
@@ -17,11 +18,7 @@ export function StartMenuPage() {
     audioEngine.playBGM('/sounds/start-menu.wav')
   }, [])
 
-  const handleHover = () =>
-    audioEngine.playOneShot('/sounds/menu-hover.mp3', 'UI')
-
   const handleClick = (to: string) => {
-    audioEngine.playOneShot('/sounds/menu-click.wav', 'UI')
     if (navigate) navigate(to)
     else console.log('navegar para', to)
   }
@@ -71,10 +68,9 @@ export function StartMenuPage() {
 
               <nav className="mt-6 space-y-3" aria-label="Main menu">
                 {items.map((it) => (
-                  <button
+                  <Button
                     key={it.id}
                     onClick={() => handleClick(it.to)}
-                    onMouseEnter={handleHover}
                     className="w-full cursor-pointer text-left px-4 py-3 rounded-2xl bg-white/80 hover:bg-blue-700/80 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-400 transition flex items-center gap-3"
                   >
                     <span className="flex-none w-8 h-8 rounded-full bg-white/80 flex items-center justify-center text-sm text-black/80">
@@ -84,7 +80,7 @@ export function StartMenuPage() {
                       {it.label}
                     </span>
                     <span className="text-xs text-black/60">›</span>
-                  </button>
+                  </Button>
                 ))}
               </nav>
 

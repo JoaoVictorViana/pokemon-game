@@ -1,3 +1,4 @@
+import { Button } from '@/shared/ui/core/Button'
 import { useNavigate } from 'react-router'
 
 export default function CreditsPage() {
@@ -6,12 +7,12 @@ export default function CreditsPage() {
   return (
     <div className="w-full h-full flex flex-col gap-4 text-black">
       <header className="w-full h-[10%] bg-red-400 py-3 px-2 border rounded-xl text-white flex items-center gap-2">
-        <button
+        <Button
           onClick={() => navigate(-1)}
           className="p-3 cursor-pointer rounded-lg bg-white/20 hover:bg-white/30 text-white flex items-center justify-center"
         >
           {'<'}
-        </button>
+        </Button>
         Créditos
       </header>
 

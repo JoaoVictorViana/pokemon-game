@@ -29,3 +29,10 @@ export async function fetchAudioAsArrayBuffer(
 
   return response.arrayBuffer()
 }
+
+export const renderSprite = (arrayBufferSprite?: ArrayBuffer) => {
+  if (!arrayBufferSprite) return undefined
+  const imageBlob = new Blob([arrayBufferSprite], { type: 'image/png' })
+  const objectUrl = URL.createObjectURL(imageBlob)
+  return objectUrl
+}

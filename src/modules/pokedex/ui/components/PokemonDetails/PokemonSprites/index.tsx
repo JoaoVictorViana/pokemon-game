@@ -3,6 +3,7 @@ import { PokemonAudioService } from '@/modules/pokemon/domain/services/PokemonAu
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { motion, useAnimationControls } from 'framer-motion'
 import { ANIMATION_POKEMON_SPRITE_SPEED } from '@/modules/pokemon/enums'
+import { renderSprite } from '@/shared/utils/file'
 
 type Props = {
   pokemon: Pokemon
@@ -28,25 +29,14 @@ export function PokemonSprites({ pokemon }: Props) {
     setSpriteMode((prev) => (prev === 'back' ? 'front' : 'back'))
   }, [setSpriteMode])
 
-  const handleRenderSprite = (arrayBufferSprite?: ArrayBuffer) => {
-    if (!arrayBufferSprite) return undefined
-
-    console.log(arrayBufferSprite)
-    const imageBlob = new Blob([arrayBufferSprite], { type: 'image/png' })
-    const objectUrl = URL.createObjectURL(imageBlob)
-    return objectUrl
-  }
-
   const sprites = useMemo(() => {
     return {
-      back: handleRenderSprite(pokemon.sprites?.back),
-      back_shiny: handleRenderSprite(pokemon.sprites?.back_shiny),
-      front: handleRenderSprite(pokemon.sprites?.front),
-      front_shiny: handleRenderSprite(pokemon.sprites?.front_shiny),
+      back: renderSprite(pokemon.sprites?.back),
+      back_shiny: renderSprite(pokemon.sprites?.back_shiny),
+      front: renderSprite(pokemon.sprites?.front),
+      front_shiny: renderSprite(pokemon.sprites?.front_shiny),
     }
   }, [pokemon])
-
-  console.log(sprites)
 
   const currentSprite = useMemo(() => {
     if (!shinyChecked) {
