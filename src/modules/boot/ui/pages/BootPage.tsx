@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { LoadingBar } from '../components/LoadingBar'
 import { useNavigate } from 'react-router'
 import { createLoadGameResourcesUseCase } from '../../application/factories/createLoadGameResourcesUseCase'
+import { createStarterSelectionDependencies } from '@/modules/pokemon/application/createStarterSelectionDependencies'
 
 export function BootPage() {
   const [progress, setProgress] = useState(0)
@@ -13,6 +14,7 @@ export function BootPage() {
     let timeoutId: ReturnType<typeof setTimeout> | undefined
 
     const useCase = createLoadGameResourcesUseCase()
+    const starterSelectionDependencies = createStarterSelectionDependencies()
 
     void useCase
       .execute((p, m) => {
@@ -24,7 +26,20 @@ export function BootPage() {
         setMessage(m)
 
         if (p >= 100) {
-          timeoutId = setTimeout(() => navigate('/menu'), 500)
+          timeoutId = setTimeout(async () => {
+            if (!active) {
+              return
+            }
+
+            const starterAlreadySelected =
+              await starterSelectionDependencies.checkStarterPokemonSelection.execute()
+
+            if (!active) {
+              return
+            }
+
+            navigate(starterAlreadySelected ? '/menu' : '/starter-selection')
+          }, 500)
         }
       })
       .catch((error: Error) => {

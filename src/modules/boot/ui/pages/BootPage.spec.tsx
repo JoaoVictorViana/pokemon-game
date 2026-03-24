@@ -5,6 +5,7 @@ import { BootPage } from './BootPage'
 
 const navigateMock = vi.fn()
 const executeMock = vi.fn()
+const checkStarterPokemonSelectionExecuteMock = vi.fn()
 
 vi.mock('react-router', async () => {
   const actual = await vi.importActual<typeof import('react-router')>(
@@ -23,16 +24,25 @@ vi.mock('../../application/factories/createLoadGameResourcesUseCase', () => ({
   }),
 }))
 
+vi.mock('@/modules/pokemon/application/createStarterSelectionDependencies', () => ({
+  createStarterSelectionDependencies: () => ({
+    checkStarterPokemonSelection: {
+      execute: checkStarterPokemonSelectionExecuteMock,
+    },
+  }),
+}))
+
 describe('BootPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    checkStarterPokemonSelectionExecuteMock.mockResolvedValue(false)
   })
 
   afterEach(() => {
     vi.useRealTimers()
   })
 
-  it('renderiza progresso e navega para o menu ao concluir o boot', async () => {
+  it('navega para a selecao inicial quando o usuario ainda nao confirmou um pokemon', async () => {
     vi.useFakeTimers()
 
     executeMock.mockImplementationOnce(
@@ -56,6 +66,33 @@ describe('BootPage', () => {
 
     expect(screen.getByText('Dados carregados!')).toBeInTheDocument()
     expect(navigateMock).not.toHaveBeenCalled()
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(500)
+    })
+
+    expect(navigateMock).toHaveBeenCalledWith('/starter-selection')
+  })
+
+  it('navega para o menu quando o pokemon inicial ja foi confirmado', async () => {
+    vi.useFakeTimers()
+    checkStarterPokemonSelectionExecuteMock.mockResolvedValueOnce(true)
+
+    executeMock.mockImplementationOnce(
+      async (update: (progress: number, message: string) => void) => {
+        update(100, 'Dados carregados!')
+      }
+    )
+
+    render(
+      <MemoryRouter>
+        <BootPage />
+      </MemoryRouter>
+    )
+
+    await act(async () => {
+      await Promise.resolve()
+    })
 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(500)

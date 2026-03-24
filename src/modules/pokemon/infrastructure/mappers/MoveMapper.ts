@@ -1,5 +1,6 @@
 import { PokemonMove } from '../../domain/entities/PokemonMove'
 import { PokemonMoveId } from '../../domain/value-objects/PokemonMoveId'
+import type { PokemonType } from '../../enums'
 import type { MoveApiResponse } from '../http/pokeApi.types'
 
 export interface MoveDBModel {
@@ -16,7 +17,7 @@ export const PokemonMoveMapper = {
     return new PokemonMove(
       PokemonMoveId.create(data.id),
       data.name,
-      data.type.name,
+      data.type.name as PokemonType,
       data.power ?? 0,
       data.pp,
       data.accuracy ?? 0
