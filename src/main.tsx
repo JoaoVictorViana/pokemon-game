@@ -3,11 +3,14 @@ import './index.css'
 import App from './App.tsx'
 import { BrowserRouter } from 'react-router'
 import { GameLayout } from './shared/ui/GameLayout/index.tsx'
+import { AudioProvider } from './shared/ui/AudioProvider/index.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
-    <GameLayout>
-      <App />
-    </GameLayout>
+    <AudioProvider>
+      <GameLayout>
+        <App />
+      </GameLayout>
+    </AudioProvider>
   </BrowserRouter>
 )

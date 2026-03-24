@@ -1,13 +1,16 @@
-type AudioChannel = 'MASTER' | 'BGM' | 'SFX' | 'UI'
+export type AudioChannel = 'MASTER' | 'BGM' | 'SFX' | 'UI'
 
 interface ChannelState {
   volume: number
   muted: boolean
 }
 
+type AudioChangeListener = () => void
+
 export class AudioEngine {
   private channels: Record<AudioChannel, ChannelState>
   private currentBGM: HTMLAudioElement | null = null
+  private listeners: Set<AudioChangeListener> = new Set()
 
   constructor() {
     this.channels = {
@@ -18,22 +21,58 @@ export class AudioEngine {
     }
   }
 
-  /** Global volume */
-  setMasterVolume(v: number) {
-    this.channels.MASTER.volume = v
+  subscribe(listener: AudioChangeListener) {
+    this.listeners.add(listener)
+    return () => this.listeners.delete(listener)
   }
 
-  /** Per-channel volume */
+  private notify() {
+    this.listeners.forEach((l) => l())
+  }
+
+  getMasterVolume() {
+    return this.channels.MASTER.volume
+  }
+
+  getChannelVolume(ch: AudioChannel) {
+    return this.channels[ch].volume
+  }
+
+  isMuted(ch: AudioChannel) {
+    return this.channels[ch].muted
+  }
+
+  setMasterVolume(v: number) {
+    this.channels.MASTER.volume = v
+    if (this.currentBGM) {
+      this.currentBGM.volume = v * this.channels.BGM.volume
+    }
+    this.notify()
+  }
+
   setChannelVolume(ch: AudioChannel, v: number) {
     this.channels[ch].volume = v
+    if (ch === 'BGM' && this.currentBGM) {
+      this.currentBGM.volume = v * this.channels.MASTER.volume
+    }
+    this.notify()
   }
 
   mute(ch: AudioChannel) {
     this.channels[ch].muted = true
+    if (ch === 'MASTER' && this.currentBGM) {
+      this.currentBGM.volume = 0
+    }
+    this.notify()
   }
 
   unmute(ch: AudioChannel) {
     this.channels[ch].muted = false
+    if (ch === 'MASTER' && this.currentBGM) {
+      this.currentBGM.volume =
+        this.channels.BGM.volume * this.channels.MASTER.volume
+    }
+    this.notify()
   }
 
   /** Play SFX / UI instantly */
