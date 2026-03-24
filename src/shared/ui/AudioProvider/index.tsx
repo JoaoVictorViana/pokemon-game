@@ -21,18 +21,23 @@ interface AudioContextValue {
 
 const AudioContext = createContext<AudioContextValue | null>(null)
 
-function useAudioSnapshot() {
+function useMasterVolume() {
   return useSyncExternalStore(
     (cb) => audioEngine.subscribe(cb),
-    () => ({
-      masterVolume: audioEngine.getMasterVolume(),
-      isMasterMuted: audioEngine.isMuted('MASTER'),
-    })
+    () => audioEngine.getMasterVolume()
+  )
+}
+
+function useIsMasterMuted() {
+  return useSyncExternalStore(
+    (cb) => audioEngine.subscribe(cb),
+    () => audioEngine.isMuted('MASTER')
   )
 }
 
 export function AudioProvider({ children }: { children: ReactNode }) {
-  const snapshot = useAudioSnapshot()
+  const masterVolume = useMasterVolume()
+  const isMasterMuted = useIsMasterMuted()
 
   const setMasterVolume = useCallback((v: number) => {
     audioEngine.setMasterVolume(v)
@@ -57,8 +62,8 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   return (
     <AudioContext.Provider
       value={{
-        masterVolume: snapshot.masterVolume,
-        isMasterMuted: snapshot.isMasterMuted,
+        masterVolume,
+        isMasterMuted,
         setMasterVolume,
         toggleMute,
         getChannelVolume,
