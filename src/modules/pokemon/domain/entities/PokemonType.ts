@@ -1,4 +1,4 @@
-import type { PokemonTypeId } from '../values-objetcts/PokemonTypeId'
+import type { PokemonTypeId } from '../value-objects/PokemonTypeId'
 import type { Pokemon } from './Pokemon'
 import type { PokemonMove } from './PokemonMove'
 
@@ -17,3 +17,4 @@ export class PokemonType {
     public readonly pokemons: Pokemon[]
   ) {}
 }
+

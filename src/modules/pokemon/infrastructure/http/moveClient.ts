@@ -1,14 +1,14 @@
+import { pokeApiClient } from './pokeApiClient'
+import type { MoveApiResponse, NamedApiResourceList } from './pokeApi.types'
+
 export const moveClient = {
-  async fetchById(id: number) {
-    const res = await fetch(`https://pokeapi.co/api/v2/move/${id}`)
-    return res.json()
+  fetchById(id: number) {
+    return pokeApiClient.getJson<MoveApiResponse>(`move/${id}`)
   },
-  async fetchByUrl(url: string) {
-    const res = await fetch(url)
-    return res.json()
+  fetchByUrl(url: string) {
+    return pokeApiClient.getJson<MoveApiResponse>(url)
   },
-  async listAll() {
-    const res = await fetch(`https://pokeapi.co/api/v2/move?limit=10000`)
-    return res.json()
+  listAll() {
+    return pokeApiClient.getJson<NamedApiResourceList>('move?limit=10000')
   },
 }

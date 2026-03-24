@@ -1,4 +1,4 @@
-import { PokemonId } from '../values-objetcts/PokemonId'
+import { PokemonId } from '../value-objects/PokemonId'
 import type { PokemonMove } from './PokemonMove'
 import type { PokemonSprites } from './PokemonSprites'
 import type { PokemonStats } from './PokemonStats'
@@ -18,3 +18,4 @@ export class Pokemon {
     public readonly stats?: PokemonStats
   ) {}
 }
+

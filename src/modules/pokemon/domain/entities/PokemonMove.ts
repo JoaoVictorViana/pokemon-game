@@ -1,5 +1,5 @@
 import type { PokemonType } from '../../enums'
-import type { PokemonMoveId } from '../values-objetcts/PokemonMoveId'
+import type { PokemonMoveId } from '../value-objects/PokemonMoveId'
 
 export class PokemonMove {
   constructor(
@@ -12,3 +12,4 @@ export class PokemonMove {
     public readonly level_learned_at?: number
   ) {}
 }
+

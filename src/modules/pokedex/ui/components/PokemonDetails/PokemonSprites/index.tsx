@@ -1,8 +1,8 @@
 import type { Pokemon } from '@/modules/pokemon/domain/entities/Pokemon'
 import { PokemonAudioService } from '@/modules/pokemon/domain/services/PokemonAudioService'
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { motion, useAnimationControls } from 'framer-motion'
 import { ANIMATION_POKEMON_SPRITE_SPEED } from '@/modules/pokemon/enums'
+import { motion, useAnimationControls } from 'motion/react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 type Props = {
   pokemon: Pokemon
@@ -26,27 +26,24 @@ export function PokemonSprites({ pokemon }: Props) {
 
   const handleChangePosition = useCallback(() => {
     setSpriteMode((prev) => (prev === 'back' ? 'front' : 'back'))
-  }, [setSpriteMode])
-
-  const handleRenderSprite = (arrayBufferSprite?: ArrayBuffer) => {
-    if (!arrayBufferSprite) return undefined
-
-    console.log(arrayBufferSprite)
-    const imageBlob = new Blob([arrayBufferSprite], { type: 'image/png' })
-    const objectUrl = URL.createObjectURL(imageBlob)
-    return objectUrl
-  }
+  }, [])
 
   const sprites = useMemo(() => {
-    return {
-      back: handleRenderSprite(pokemon.sprites?.back),
-      back_shiny: handleRenderSprite(pokemon.sprites?.back_shiny),
-      front: handleRenderSprite(pokemon.sprites?.front),
-      front_shiny: handleRenderSprite(pokemon.sprites?.front_shiny),
-    }
-  }, [pokemon])
+    function toObjectUrl(sprite?: ArrayBuffer) {
+      if (!sprite || sprite.byteLength === 0) {
+        return undefined
+      }
 
-  console.log(sprites)
+      return URL.createObjectURL(new Blob([sprite], { type: 'image/png' }))
+    }
+
+    return {
+      back: toObjectUrl(pokemon.sprites?.back),
+      back_shiny: toObjectUrl(pokemon.sprites?.back_shiny),
+      front: toObjectUrl(pokemon.sprites?.front),
+      front_shiny: toObjectUrl(pokemon.sprites?.front_shiny),
+    }
+  }, [pokemon.sprites])
 
   const currentSprite = useMemo(() => {
     if (!shinyChecked) {
@@ -57,18 +54,18 @@ export function PokemonSprites({ pokemon }: Props) {
   }, [spriteMode, shinyChecked, sprites])
 
   useEffect(() => {
-    if (!pokemon) return
     const audioService = new PokemonAudioService()
+
     audioService.playCry(pokemon.cry)
-    startSpriteAnimation()
-  }, [pokemon, currentSprite, startSpriteAnimation])
+    void startSpriteAnimation()
+  }, [pokemon.cry, startSpriteAnimation])
 
   useEffect(() => {
     return () => {
-      URL.revokeObjectURL(sprites.back ?? '')
-      URL.revokeObjectURL(sprites.back_shiny ?? '')
-      URL.revokeObjectURL(sprites.front ?? '')
-      URL.revokeObjectURL(sprites.front_shiny ?? '')
+      if (sprites.back) URL.revokeObjectURL(sprites.back)
+      if (sprites.back_shiny) URL.revokeObjectURL(sprites.back_shiny)
+      if (sprites.front) URL.revokeObjectURL(sprites.front)
+      if (sprites.front_shiny) URL.revokeObjectURL(sprites.front_shiny)
     }
   }, [sprites])
 
@@ -93,7 +90,7 @@ export function PokemonSprites({ pokemon }: Props) {
         {'>'}
       </button>
       <button
-        className={`${shinyChecked ? 'bg-green-300' : 'bg-gray-300'}  hover:border-gray-300 text-xs hover:bg-green-300 text-black absolute p-2 top-0 right-0 cursor-pointer rounded-full`}
+        className={`${shinyChecked ? 'bg-green-300' : 'bg-gray-300'} hover:border-gray-300 text-xs hover:bg-green-300 text-black absolute p-2 top-0 right-0 cursor-pointer rounded-full`}
         onClick={() => setShinyChecked((prev) => !prev)}
       >
         S

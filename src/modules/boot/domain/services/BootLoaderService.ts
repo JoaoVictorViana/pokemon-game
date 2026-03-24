@@ -1,22 +1,32 @@
 import { DB_TABLES, indexedDb } from '@/configs/db'
 
-export type ProgressCallback = (progress: number, msg: string) => void
+export interface BootStepStatus {
+  progress: number
+  message: string
+}
+
+export interface BootLoaderContext {
+  update: (status: BootStepStatus) => void
+}
 
 export interface BootLoader {
-  load(progressCallback: ProgressCallback): Promise<void>
+  readonly name: string
+  execute(context: BootLoaderContext): Promise<void>
 }
 
 export class BootLoaderService {
   constructor(private loaders: BootLoader[]) {}
 
-  async runAll(progressCallback: ProgressCallback) {
+  async runAll(progressCallback: (progress: number, msg: string) => void) {
     const total = this.loaders.length
 
     for (let i = 0; i < total; i++) {
       const loader = this.loaders[i]
-      await loader.load((step, msg) => {
-        const progress = ((i + step) / total) * 100
-        progressCallback(progress, msg)
+      await loader.execute({
+        update: ({ progress, message }) => {
+          const currentProgress = ((i + progress) / total) * 100
+          progressCallback(currentProgress, message)
+        },
       })
     }
   }

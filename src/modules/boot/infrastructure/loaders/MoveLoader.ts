@@ -2,32 +2,38 @@ import { MoveDBRepository } from '@/modules/pokemon/infrastructure/repositories/
 import {
   BootLoaderService,
   type BootLoader,
-  type ProgressCallback,
+  type BootLoaderContext,
 } from '../../domain/services/BootLoaderService'
 import { moveClient } from '@/modules/pokemon/infrastructure/http/moveClient'
 import { PokemonMoveMapper } from '@/modules/pokemon/infrastructure/mappers/MoveMapper'
+import { runWithConcurrency } from '@/shared/utils/promise'
 
 export class MoveLoader implements BootLoader {
-  async load(update: ProgressCallback) {
-    update(0, 'Carregando movimentos...')
+  readonly name = 'moves'
+
+  constructor(private repository: MoveDBRepository) {}
+
+  async execute({ update }: BootLoaderContext) {
+    update({ progress: 0, message: 'Carregando movimentos...' })
     const executed = await BootLoaderService.hasLoaderExecuted('moves')
 
     if (executed) {
-      update(1, 'Movimentos carregados!')
+      update({ progress: 1, message: 'Movimentos carregados!' })
       return
     }
-    const moves = await moveClient.listAll()
-    const repository = new MoveDBRepository()
 
-    await Promise.all(
-      moves.results.map(async (move: { url: string }) => {
+    const moves = await moveClient.listAll()
+
+    await runWithConcurrency(
+      moves.results.map((move) => async () => {
         const data = await moveClient.fetchByUrl(move.url)
-        await repository.save(PokemonMoveMapper.fromApi(data))
-      })
+        await this.repository.save(PokemonMoveMapper.fromApi(data))
+      }),
+      10
     )
 
     await BootLoaderService.markLoaderExecuted('moves')
 
-    update(1, 'Movimentos carregados!')
+    update({ progress: 1, message: 'Movimentos carregados!' })
   }
 }

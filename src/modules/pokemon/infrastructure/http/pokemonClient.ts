@@ -1,16 +1,17 @@
+import { pokeApiClient } from './pokeApiClient'
+import type {
+  NamedApiResourceList,
+  PokemonApiResponse,
+} from './pokeApi.types'
+
 export const pokemonClient = {
-  async fetchById(id: number) {
-    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`)
-    return res.json()
+  fetchById(id: number) {
+    return pokeApiClient.getJson<PokemonApiResponse>(`pokemon/${id}`)
   },
-
-  async fetchByUrl(url: string) {
-    const res = await fetch(url)
-    return res.json()
+  fetchByUrl(url: string) {
+    return pokeApiClient.getJson<PokemonApiResponse>(url)
   },
-
-  async listAll() {
-    const res = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=10000`)
-    return res.json()
+  listAll() {
+    return pokeApiClient.getJson<NamedApiResourceList>('pokemon?limit=10000')
   },
 }

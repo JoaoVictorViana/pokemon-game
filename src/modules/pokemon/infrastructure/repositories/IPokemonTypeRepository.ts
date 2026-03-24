@@ -1,5 +1,5 @@
 import type { PokemonType } from '../../domain/entities/PokemonType'
-import type { PokemonTypeId } from '../../domain/values-objetcts/PokemonTypeId'
+import type { PokemonTypeId } from '../../domain/value-objects/PokemonTypeId'
 
 export interface IPokemonTypeRepository {
   getById(id: PokemonTypeId): Promise<PokemonType>
@@ -7,3 +7,4 @@ export interface IPokemonTypeRepository {
   listAll(): Promise<Partial<PokemonType>[]>
   save(pokemonType: PokemonType): Promise<PokemonType>
 }
+

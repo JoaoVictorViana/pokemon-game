@@ -1,4 +1,4 @@
-import { PokemonId } from '../../domain/values-objetcts/PokemonId'
+import { PokemonId } from '../../domain/value-objects/PokemonId'
 import type { IPokemonRepository } from '../../infrastructure/repositories/IPokemonRepository'
 
 export class FetchPokemonUseCase {
@@ -8,3 +8,4 @@ export class FetchPokemonUseCase {
     return this.repo.getById(PokemonId.create(id))
   }
 }
+

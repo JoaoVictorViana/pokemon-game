@@ -7,7 +7,6 @@ type Props = {
 }
 
 export function PokemonDetails({ pokemon }: Props) {
-  console.log(pokemon.moves)
   return (
     <div className="flex flex-col justify-between gap-2 w-full h-full">
       <section className="flex justify-between px-4 gap-4 w-full h-full">
@@ -35,6 +34,8 @@ export function PokemonDetails({ pokemon }: Props) {
               <span>HP:{pokemon.stats?.hp}</span>
               <span>Attack:{pokemon.stats?.attack}</span>
               <span>Defense:{pokemon.stats?.defense}</span>
+              <span>Sp. Attack:{pokemon.stats?.special_attack}</span>
+              <span>Sp. Defense:{pokemon.stats?.special_defense}</span>
               <span>Speed:{pokemon.stats?.speed}</span>
             </div>
           </div>

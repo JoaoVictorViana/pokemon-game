@@ -4,10 +4,11 @@ import {
 } from '@/shared/utils/file'
 import { Pokemon } from '../../domain/entities/Pokemon'
 import { PokemonMove } from '../../domain/entities/PokemonMove'
-import { PokemonId } from '../../domain/values-objetcts/PokemonId'
+import { PokemonId } from '../../domain/value-objects/PokemonId'
 import { VERSION_DEFAULT } from '@/configs/api'
-import { PokemonTypeDBRepository } from '../repositories/PokemonTypeDBRepository'
-import { MoveDBRepository } from '../repositories/MoveDBRepository'
+import type { PokemonApiResponse } from '../http/pokeApi.types'
+import type { IMoveRepository } from '../repositories/IMoveRepository'
+import type { IPokemonTypeRepository } from '../repositories/IPokemonTypeRepository'
 
 export interface PokemonDBModel {
   id: number
@@ -37,15 +38,12 @@ export interface PokemonMoveDBModel {
 }
 
 export const PokemonMapper = {
-  async mapTypes(name: string) {
-    const repo = new PokemonTypeDBRepository()
-    const typeData = await repo.getByName(name)
-
-    return typeData
-  },
-  async mapMove(name: string, learnedAt: number) {
-    const repo = new MoveDBRepository()
-    const moveData = await repo.getByName(name)
+  async mapMove(
+    moveRepository: IMoveRepository,
+    name: string,
+    learnedAt: number
+  ) {
+    const moveData = await moveRepository.getByName(name)
 
     return new PokemonMove(
       moveData.id,
@@ -57,16 +55,25 @@ export const PokemonMapper = {
       learnedAt
     )
   },
-  async fromApi(data: any): Promise<Pokemon> {
+  async fromApi(
+    data: PokemonApiResponse,
+    dependencies: {
+      moveRepository: IMoveRepository
+      pokemonTypeRepository: IPokemonTypeRepository
+    }
+  ): Promise<Pokemon> {
     const types = await Promise.all(
-      data.types.map(async (item: any) => this.mapTypes(item.type.name))
+      data.types.map((item) =>
+        dependencies.pokemonTypeRepository.getByName(item.type.name)
+      )
     )
     const moves = await Promise.all(
-      data.moves.map(async (item: any) =>
+      data.moves.map((item) =>
         this.mapMove(
+          dependencies.moveRepository,
           item.move.name,
-          item.version_group_details?.find(
-            (version: any) => version.version_group.name === VERSION_DEFAULT
+          item.version_group_details.find(
+            (version) => version.version_group.name === VERSION_DEFAULT
           )?.level_learned_at ?? 0
         )
       )
@@ -94,19 +101,21 @@ export const PokemonMapper = {
       moves,
       types,
       {
-        hp: data.stats.find((stat: any) => stat.stat.name === 'hp')?.base_stat,
-        attack: data.stats.find((stat: any) => stat.stat.name === 'attack')
-          ?.base_stat,
-        defense: data.stats.find((stat: any) => stat.stat.name === 'defense')
-          ?.base_stat,
+        hp: data.stats.find((stat) => stat.stat.name === 'hp')?.base_stat ?? 0,
+        attack:
+          data.stats.find((stat) => stat.stat.name === 'attack')?.base_stat ??
+          0,
+        defense:
+          data.stats.find((stat) => stat.stat.name === 'defense')?.base_stat ??
+          0,
         special_attack: data.stats.find(
-          (stat: any) => stat.stat.name === 'special_attack'
-        )?.base_stat,
+          (stat) => stat.stat.name === 'special-attack'
+        )?.base_stat ?? 0,
         special_defense: data.stats.find(
-          (stat: any) => stat.stat.name === 'special_defense'
-        )?.base_stat,
-        speed: data.stats.find((stat: any) => stat.stat.name === 'speed')
-          ?.base_stat,
+          (stat) => stat.stat.name === 'special-defense'
+        )?.base_stat ?? 0,
+        speed:
+          data.stats.find((stat) => stat.stat.name === 'speed')?.base_stat ?? 0,
       }
     )
   },
@@ -140,3 +149,4 @@ export const PokemonMapper = {
     }
   },
 }
+

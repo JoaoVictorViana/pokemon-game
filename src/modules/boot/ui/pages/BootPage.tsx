@@ -1,34 +1,46 @@
 import { useEffect, useState } from 'react'
 import { LoadingBar } from '../components/LoadingBar'
-import { BootLoaderService } from '../../domain/services/BootLoaderService'
-import { LoadGameResourcesUseCase } from '../../application/use-cases/LoadGameResourcesUseCase'
 import { useNavigate } from 'react-router'
-import { PokemonTypeLoader } from '../../infrastructure/loaders/PokemonTypeLoader'
-import { MoveLoader } from '../../infrastructure/loaders/MoveLoader'
-import { PokemonDataLoader } from '../../infrastructure/loaders/PokemonDataLoader'
+import { createLoadGameResourcesUseCase } from '../../application/factories/createLoadGameResourcesUseCase'
 
 export function BootPage() {
   const [progress, setProgress] = useState(0)
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState('Inicializando...')
   const navigate = useNavigate()
 
   useEffect(() => {
-    const service = new BootLoaderService([
-      new PokemonTypeLoader(),
-      new MoveLoader(),
-      new PokemonDataLoader(),
-    ])
+    let active = true
+    let timeoutId: ReturnType<typeof setTimeout> | undefined
 
-    const usecase = new LoadGameResourcesUseCase(service)
+    const useCase = createLoadGameResourcesUseCase()
 
-    usecase.execute((p, m) => {
-      setProgress(p)
-      setMessage(m)
+    void useCase
+      .execute((p, m) => {
+        if (!active) {
+          return
+        }
 
-      if (p >= 100) {
-        setTimeout(() => navigate('/menu'), 500)
+        setProgress(p)
+        setMessage(m)
+
+        if (p >= 100) {
+          timeoutId = setTimeout(() => navigate('/menu'), 500)
+        }
+      })
+      .catch((error: Error) => {
+        if (!active) {
+          return
+        }
+
+        setMessage(error.message)
+      })
+
+    return () => {
+      active = false
+      if (timeoutId) {
+        clearTimeout(timeoutId)
       }
-    })
+    }
   }, [navigate])
 
   return (

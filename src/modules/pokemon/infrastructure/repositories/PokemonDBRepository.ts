@@ -1,12 +1,12 @@
 import { Pokemon } from '../../domain/entities/Pokemon'
-import { PokemonId } from '../../domain/values-objetcts/PokemonId'
+import { PokemonId } from '../../domain/value-objects/PokemonId'
 import type { IPokemonRepository } from './IPokemonRepository'
 import { DB_TABLES, indexedDb } from '@/configs/db'
-import { PokemonMoveId } from '../../domain/values-objetcts/PokemonMoveId'
+import { PokemonMoveId } from '../../domain/value-objects/PokemonMoveId'
 import { PokemonMapper } from '../mappers/PokemonMapper'
 import { MoveDBRepository } from './MoveDBRepository'
 import { PokemonTypeDBRepository } from './PokemonTypeDBRepository'
-import { PokemonTypeId } from '../../domain/values-objetcts/PokemonTypeId'
+import { PokemonTypeId } from '../../domain/value-objects/PokemonTypeId'
 import type { PokemonType } from '../../domain/entities/PokemonType'
 
 export class PokemonDBRepository implements IPokemonRepository {
@@ -24,7 +24,7 @@ export class PokemonDBRepository implements IPokemonRepository {
     const pokemonTypeRepository = new PokemonTypeDBRepository()
 
     const moves = await Promise.all(
-      movesDB.map(async (moveDb: any) =>
+      movesDB.map(async (moveDb) =>
         moveRepository.getById(PokemonMoveId.create(moveDb.move_id))
       )
     )
@@ -148,3 +148,4 @@ export class PokemonDBRepository implements IPokemonRepository {
     return pokemon
   }
 }
+

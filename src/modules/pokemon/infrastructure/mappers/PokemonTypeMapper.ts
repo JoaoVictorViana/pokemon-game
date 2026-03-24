@@ -1,7 +1,11 @@
 import { VERSION_DEFAULT } from '@/configs/api'
 import { PokemonType } from '../../domain/entities/PokemonType'
-import { PokemonTypeId } from '../../domain/values-objetcts/PokemonTypeId'
+import { PokemonTypeId } from '../../domain/value-objects/PokemonTypeId'
 import { typeClient } from '../http/typeClient'
+import type {
+  NamedApiResource,
+  TypeApiResponse,
+} from '../http/pokeApi.types'
 
 export interface PokemonTypeDBModel {
   id: number
@@ -16,7 +20,7 @@ export interface PokemonTypeEffectivenessDBModel {
 }
 
 export const PokemonTypeMapper = {
-  async mapTypes(list: any[] | undefined) {
+  async mapTypes(list: NamedApiResource[] | undefined) {
     if (!list) return []
 
     return Promise.all(
@@ -40,7 +44,7 @@ export const PokemonTypeMapper = {
       })
     )
   },
-  async fromApi(data: any): Promise<PokemonType> {
+  async fromApi(data: TypeApiResponse): Promise<PokemonType> {
     const doubleDamageFrom = await this.mapTypes(
       data.damage_relations.double_damage_from
     )
@@ -93,3 +97,4 @@ export const PokemonTypeMapper = {
     }
   },
 }
+
