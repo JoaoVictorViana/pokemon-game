@@ -1,10 +1,10 @@
 import { PokemonMove } from '../../domain/entities/PokemonMove'
 import { DB_TABLES, indexedDb } from '@/configs/db'
 import type { IMoveRepository } from './IMoveRepository'
-import { PokemonMoveId } from '../../domain/values-objetcts/PokemonMoveId'
+import { PokemonMoveId } from '../../domain/value-objects/PokemonMoveId'
 import { PokemonMoveMapper } from '../mappers/MoveMapper'
 import { PokemonTypeDBRepository } from './PokemonTypeDBRepository'
-import { PokemonTypeId } from '../../domain/values-objetcts/PokemonTypeId'
+import { PokemonTypeId } from '../../domain/value-objects/PokemonTypeId'
 import type { PokemonType } from '../../enums'
 
 export class MoveDBRepository implements IMoveRepository {
@@ -58,7 +58,7 @@ export class MoveDBRepository implements IMoveRepository {
 
     return await Promise.all(
       results.map(
-        async (item: any) =>
+        async (item) =>
           new PokemonMove(
             PokemonMoveId.create(item.id),
             item.name,
@@ -74,7 +74,9 @@ export class MoveDBRepository implements IMoveRepository {
 
   async save(move: PokemonMove): Promise<PokemonMove> {
     const db = await indexedDb
-    const moveDb = await PokemonMoveMapper.toDB(move)
+    const typeRepository = new PokemonTypeDBRepository()
+    const type = await typeRepository.getByName(move.type)
+    const moveDb = PokemonMoveMapper.toDB(move, type.id.getValue())
 
     const tx = db.transaction(DB_TABLES.moves, 'readwrite')
 
@@ -85,3 +87,4 @@ export class MoveDBRepository implements IMoveRepository {
     return move
   }
 }
+

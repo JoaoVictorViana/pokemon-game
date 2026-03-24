@@ -1,6 +1,6 @@
 import { PokemonMove } from '../../domain/entities/PokemonMove'
-import { PokemonMoveId } from '../../domain/values-objetcts/PokemonMoveId'
-import { PokemonTypeDBRepository } from '../repositories/PokemonTypeDBRepository'
+import { PokemonMoveId } from '../../domain/value-objects/PokemonMoveId'
+import type { MoveApiResponse } from '../http/pokeApi.types'
 
 export interface MoveDBModel {
   id: number
@@ -12,26 +12,25 @@ export interface MoveDBModel {
 }
 
 export const PokemonMoveMapper = {
-  fromApi(data: any): PokemonMove {
+  fromApi(data: MoveApiResponse): PokemonMove {
     return new PokemonMove(
       PokemonMoveId.create(data.id),
       data.name,
       data.type.name,
-      data.power,
+      data.power ?? 0,
       data.pp,
-      data.accuracy
+      data.accuracy ?? 0
     )
   },
-  async toDB(entity: PokemonMove): Promise<MoveDBModel> {
-    const type = await new PokemonTypeDBRepository().getByName(entity.type)
-
+  toDB(entity: PokemonMove, typeId: number): MoveDBModel {
     return {
       id: entity.id.getValue(),
-      accuracy: entity.accuracy ?? 0,
+      accuracy: entity.accuracy,
       name: entity.name,
-      power: entity.power ?? 0,
+      power: entity.power,
       pp: entity.pp,
-      type_id: type.id.getValue() ?? null,
+      type_id: typeId,
     }
   },
 }
+

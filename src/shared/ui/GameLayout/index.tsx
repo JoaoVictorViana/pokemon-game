@@ -6,10 +6,10 @@ export function GameLayout({ children }: { children: ReactNode }) {
       <div className="game-frame w-[50vw] h-[60vh] bg-gray-100 rounded-xl p-2 relative">
         {/* HUD */}
         <div className="absolute top-2 left-2 text-white text-xs">
-          {/* Pokémon React */}
+          {/* Pokemon React */}
         </div>
 
-        {/* Conteúdo da página */}
+        {/* Conteudo da pagina */}
         <div className="w-full h-full flex items-center justify-center">
           {children}
         </div>

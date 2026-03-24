@@ -1,5 +1,5 @@
 import type { IPokemonRepository } from '../../infrastructure/repositories/IPokemonRepository'
-import { PokemonId } from '../values-objetcts/PokemonId'
+import { PokemonId } from '../value-objects/PokemonId'
 
 export class PokemonService {
   constructor(private repo: IPokemonRepository) {}
@@ -8,3 +8,4 @@ export class PokemonService {
     return this.repo.getById(PokemonId.create(id))
   }
 }
+

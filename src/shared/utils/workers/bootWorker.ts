@@ -1,39 +1,35 @@
+import type { NamedApiResource } from '@/modules/pokemon/infrastructure/http/pokeApi.types'
 import { pokemonClient } from '@/modules/pokemon/infrastructure/http/pokemonClient'
 import { PokemonMapper } from '@/modules/pokemon/infrastructure/mappers/PokemonMapper'
+import { MoveDBRepository } from '@/modules/pokemon/infrastructure/repositories/MoveDBRepository'
 import { PokemonDBRepository } from '@/modules/pokemon/infrastructure/repositories/PokemonDBRepository'
+import { PokemonTypeDBRepository } from '@/modules/pokemon/infrastructure/repositories/PokemonTypeDBRepository'
+import { runWithConcurrency } from '../promise'
 
-// Define o limite de concorrência
 const CONCURRENCY_LIMIT = 5
 
-self.onmessage = async (e: MessageEvent) => {
-  const { pokemons } = e.data
-  const repository = new PokemonDBRepository()
+self.onmessage = async (event: MessageEvent) => {
+  const { pokemons } = event.data as { pokemons: NamedApiResource[] }
+  const pokemonRepository = new PokemonDBRepository()
+  const moveRepository = new MoveDBRepository()
+  const pokemonTypeRepository = new PokemonTypeDBRepository()
 
-  const tasks = pokemons.map((pokemon: any) => async () => {
-    try {
+  await runWithConcurrency(
+    pokemons.map((pokemon) => async () => {
       const data = await pokemonClient.fetchByUrl(pokemon.url)
 
-      await repository.save(await PokemonMapper.fromApi(data))
+      await pokemonRepository.save(
+        await PokemonMapper.fromApi(data, {
+          moveRepository,
+          pokemonTypeRepository,
+        })
+      )
+    }),
+    CONCURRENCY_LIMIT
+  )
 
-      //   self.postMessage({
-      //     type: 'progress',
-      //     id: pokemon.id,
-      //     name: pokemon.name,
-      //   })
-    } catch (error) {
-      console.error(`Erro ao processar ${pokemon.name}:`, error)
-    }
-  })
-
-  for (let i = 0; i < tasks.length; i += CONCURRENCY_LIMIT) {
-    const batch = tasks.slice(i, i + CONCURRENCY_LIMIT)
-
-    await Promise.all(batch.map((task: any) => task()))
-  }
-
-  // 4. Enviar Mensagem de Conclusão
   self.postMessage({
     type: 'complete',
-    message: 'Todos os Pokémons processados e salvos.',
+    message: 'Todos os Pokemons processados e salvos.',
   })
 }

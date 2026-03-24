@@ -1,4 +1,4 @@
-import { usePokedex } from '@/shared/hooks/usePokedex'
+import { usePokedex } from '../hooks/usePokedex'
 import { PokemonList } from '../components/PokemonList'
 import { PokemonDetails } from '../components/PokemonDetails'
 import { useNavigate } from 'react-router'
@@ -8,7 +8,13 @@ export function PokedexPage() {
 
   const navigate = useNavigate()
 
-  if (!currentPokemon) return null
+  if (!currentPokemon) {
+    return (
+      <main className="w-full h-full flex items-center justify-center">
+        Carregando Pokedex...
+      </main>
+    )
+  }
 
   return (
     <main className="w-full h-full flex flex-col gap-4">

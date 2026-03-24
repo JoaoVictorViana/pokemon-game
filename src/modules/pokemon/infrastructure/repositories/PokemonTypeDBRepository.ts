@@ -1,7 +1,7 @@
 import { PokemonType } from '../../domain/entities/PokemonType'
 import { DB_TABLES, indexedDb } from '@/configs/db'
 import type { IPokemonTypeRepository } from './IPokemonTypeRepository'
-import { PokemonTypeId } from '../../domain/values-objetcts/PokemonTypeId'
+import { PokemonTypeId } from '../../domain/value-objects/PokemonTypeId'
 import { PokemonTypeMapper } from '../mappers/PokemonTypeMapper'
 
 export class PokemonTypeDBRepository implements IPokemonTypeRepository {
@@ -157,3 +157,4 @@ export class PokemonTypeDBRepository implements IPokemonTypeRepository {
     return pokemonType
   }
 }
+

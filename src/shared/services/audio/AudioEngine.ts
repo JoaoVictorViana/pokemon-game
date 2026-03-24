@@ -6,13 +6,10 @@ interface ChannelState {
 }
 
 export class AudioEngine {
-  private audioCtx: AudioContext
   private channels: Record<AudioChannel, ChannelState>
   private currentBGM: HTMLAudioElement | null = null
 
   constructor() {
-    this.audioCtx = new AudioContext()
-
     this.channels = {
       MASTER: { volume: 1, muted: false },
       BGM: { volume: 0.8, muted: false },

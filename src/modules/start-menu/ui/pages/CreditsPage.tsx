@@ -12,7 +12,7 @@ export default function CreditsPage() {
         >
           {'<'}
         </button>
-        Créditos
+        Creditos
       </header>
 
       <p>
