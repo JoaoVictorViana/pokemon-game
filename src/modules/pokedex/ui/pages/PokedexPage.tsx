@@ -17,8 +17,8 @@ export function PokedexPage() {
   }
 
   return (
-    <main className="w-full h-full flex flex-col gap-4">
-      <header className="w-full h-[10%] bg-red-400 py-3 px-2 border rounded-xl text-white flex items-center gap-2">
+    <main className="flex h-full w-full min-h-0 flex-col gap-4 overflow-hidden p-4">
+      <header className="flex w-full flex-none items-center gap-2 rounded-xl border bg-red-400 px-2 py-3 text-white">
         <button
           onClick={() => navigate(-1)}
           className="p-3 cursor-pointer rounded-lg bg-white/20 hover:bg-white/30 text-white flex items-center justify-center"
@@ -27,7 +27,7 @@ export function PokedexPage() {
         </button>
         Pokedex
       </header>
-      <div className="flex gap-4 h-[90%] w-full">
+      <div className="flex h-full min-h-0 w-full gap-4 overflow-hidden">
         <PokemonList
           pokemons={pokemons}
           onSelect={handleChangeCurrentPokemon}
